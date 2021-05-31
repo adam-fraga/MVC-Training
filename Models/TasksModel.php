@@ -2,23 +2,46 @@
 
 namespace App\Models;
 
+use App\Core\Db;
+
 class TasksModel extends Model
 {
     private $_nom;
     private $_description;
     private $_date_creation;
     private $_date_validation;
-    private $_status;
     private $_id_utilisateur;
     private $_importance;
 
     /**
      *  Permet de set la table dynamiquement
      */
-     function __construct()
+    function __construct()
     {
         parent::__construct();
         $this->_table = 'taches';
+    }
+
+    /**
+     * @param TasksModel $Tache Objet de type Task
+     * @param string $id Identifiant utilisateur
+     */
+    public function createTask(TasksModel $Tache, string $id)
+    {
+        $this->_db = new Db();
+        //Date creation task
+        $dateCreation = new \DateTime('now');
+        $dateCreation->format('Y-m-d H:i:s');
+
+        $query = "INSERT INTO" . $this->_table . "(nom, description, date_creation, date_validation,id_utilisateur, importance) VALUES (?,?,?,?,?,?,?)";
+        $stmt = $this->_db->prepare($query);
+        $stmt->bindValue(1, $this->_nom);
+        $stmt->bindValue(2, $this->_description);
+        $stmt->bindValue(3, $this->$dateCreation);
+        $stmt->bindValue(4, $this->_date_validation);
+        $stmt->bindValue(5, $this->_id_utilisateur);
+        $stmt->bindValue(6, $this->_importance);
+        $stmt->execute();
     }
 
     /**
